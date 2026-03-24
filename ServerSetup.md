@@ -142,13 +142,13 @@ No matter what method you're using, simply monitor it to make sure your initial 
 robocopy "source" "destination" /MIR /B /COPYALL /R:1 /W:1
 ```
 
-### SyncBack (GUI)
+### SyncBackSE (GUI)
 
-Download a trial version for testing before deploying in production.
+Download and test before deploying in production.
 
-### Solarwinds MSP Backup (Continuous Restore)
+### FreeFileSync (GUI)
 
-Use the Backup Recovery Console to run a Continuous Restore, which will produce a "live" copy of the data, up to date as soon as a backup is run.
+Open-source file synchronization tool that provides a simple interface for bi-directional syncing with support for preserving file permissions.
 
 ---
 
@@ -175,45 +175,149 @@ The next time users log in, they will get the new mapped drive path, and this sh
 
 # Section 5: Folder Redirection Migration
 
-Familiarize yourself with Folder Redirection and the existing migration documentation before proceeding.
+Folder Redirection stores user profile data (Documents, Desktop, etc.) on a server rather than locally. This migration requires careful planning and execution in several phases.
 
-## Phase 1: Pre-Migration (Before install day - Non-Disruptive)
+## Timeline
 
-### Step 1: Update Group Policy (Non-Disruptive)
+These steps should be performed several days before the scheduled downtime of the server install, if possible. They can also be performed day-of if necessary.
 
-The main thing you're going to want to do is change the policy to **NOT move files to the new location**. You want to do this before the day-of so that computers can update to the new policy.
+---
+
+## Step 1: Change Policy to NOT Move Files
+
+**Timing:** Several days before or day-of migration (Non-Disruptive)
+
+This step prevents workstations from attempting to move files to the new location when they receive the updated policy. Without this step, users' computers would try to reach the old server.
 
 1. Open Group Policy Management
-2. Find and edit the Folder Redirection GPO
+2. Find the Folder Redirection GPO and edit it
 3. Navigate to: User Configuration > Policies > Windows Settings > Folder Redirection
-4. For each section (Desktop, Documents, etc.), open Properties and go to Settings tab
-5. **UNCHECK:** "Move the contents of [folder] to the new location"
-6. Under Policy Removal, select: "Leave the folder in the new location when policy is removed"
-7. Allow all workstations to receive this policy update (typically at next logon)
+4. For each section (Desktop, Documents, etc.), open the Properties of the policy
+5. Go to the Settings tab
+6. **UNCHECK** the box "Move the contents of [folder] to the new location"
+7. Under Policy Removal, choose "Leave the folder in the new location when policy is removed"
 
-### Step 2: Migrate Data (Non-Disruptive)
+**Result:** When workstations log in with the new path, they won't try to reach out to the old server and will simply pick up the new one.
 
-You can also do a copy of the Folder Redirection data beforehand using any method from **Section 3: File Migration**:
-- Robocopy
-- SyncBack
-- Solarwinds MSP Backup (Continuous Restore)
+---
 
-Preserve file permissions during the transfer.
+## Step 2: Update Group Policy
 
-### Step 3: Verify Folder Setup
+**Timing:** Before continuing to Step 3 (Non-Disruptive)
 
-**Very Important:** When setting this back up, be very mindful of NTFS folder permissions! Review the setup documentation to see what the share and NTFS permissions should be.
+Before continuing, make sure Group Policy updates on all workstations. Folder Redirection policy only updates when users log in.
 
-See **Section 5.1: Folder Redirection Setup (Detailed)** below for complete configuration instructions.
+**Recommendation:** Schedule a reboot for after business hours or early morning to ensure all workstations receive the policy update.
 
-## Phase 2: Final Migration (Install day - Disruptive)
+---
 
-If you have disruptive downtime available beforehand, you can run through the rest of the folder redirection migration early. Once all computers know NOT to move files to the new location, you can:
+## Step 3: Migrate the Data
 
-1. Move the files to the new server
-2. Update the policies to point to the new location
-3. Push out a `gpupdate /force` to all computers
-4. Test thoroughly
+**Timing:** Several days before or outside business hours (Non-Disruptive if done outside hours)
+
+Using Robocopy, SyncBackSE, FreeFileSync, or the Datto Direct Restore Utility, migrate all the data from the old share to the new server.
+
+**Important:** You must preserve file permissions during the migration.
+
+As this is data that users are working on, you'll need to either:
+- Do this outside of business hours, OR
+- Do an initial "full" copy now and an "incremental" copy before your cut-over time
+
+### Using RoboCopy for Exclusive Access Mode
+
+If someone set up the option "Grant Exclusive Access to..." on the share, you won't be able to just do a regular file copy. Use this command on the OLD server:
+
+```
+robocopy "D:\FolderRedirectionPath" "\\NewServer\d$\NewFolderRedirectionPath" /MIR /B /COPYALL /SL /XJ /R:1 /W:1 /LOG:D:\FolderRedirection.log /TEE /ETA
+```
+
+**Important:** Change the paths to match your environment:
+- First path: Your current Folder Redirection path
+- Second path: The new server's Folder Redirection folder
+
+---
+
+## Step 4: Share the Folder
+
+**Timing:** Before cut-over day (Non-Disruptive)
+
+1. On the new server, create the Folder Redirection share
+2. Use a hidden share name (one that ends in `$`)
+3. Allow all Authenticated Users access
+4. Do not change the NTFS permissions at this stage
+
+---
+
+## Step 5: Check Permissions
+
+**Timing:** Before cut-over day (Non-Disruptive)
+
+Check the folder permissions carefully:
+- The internal folders should only be accessible to each individual user
+- Do NOT replace child permissions
+- You can verify permissions by logging in as a test user
+
+**Permission Reference:**
+
+| Principal | Permission | Apply To |
+|-----------|-----------|----------|
+| CREATOR OWNER | Full Control | Subfolders and Files Only |
+| SYSTEM | Full Control | This Folder, Subfolders and Files |
+| Domain Admins | Full Control | This Folder, Subfolders and Files |
+| Everyone | Traverse Folder/Execute File, List Folder/Read Data, Read Attributes, Create Folder/Append Data | This Folder Only |
+
+---
+
+## Step 6: Update the Policy
+
+**Timing:** During scheduled downtime (Disruptive)
+
+This step must be done outside of business hours or during scheduled downtime.
+
+1. In Group Policy, update all Folder Redirection paths to point to the new server
+2. Update both Desktop and Documents (and any other redirected folders)
+
+---
+
+## Step 7: Update Group Policy and Test
+
+**Timing:** During/after cut-over (Disruptive)
+
+The next time users log in, their user profile data will simply point to the new server and all should work well.
+
+1. Push out `gpupdate /force` to all workstations
+2. Have users log in and verify everything works
+3. Test a user logon or two to confirm data appears correctly
+4. Check that files are on the new server, not local machines
+
+---
+
+## Troubleshooting: Legacy "My Documents" Folders
+
+In some cases, you may run into issues if Folder Redirection was created from older versions of Windows that still used the "My Documents" folder. If the Folder Redirection data includes "My Documents" folders, users will find their data is missing when they log in.
+
+If this occurs, run this PowerShell script beforehand:
+
+```powershell
+# Change this directory to wherever you are pointing your Folder Redirection to
+$dir = dir D:\FolderRedirection | ?{$_.PSISContainer}
+foreach ($d in $dir) {
+    # Rename the "My Documents" folder to just Documents to match Win7+
+    $path = Join-Path $d.FullName -ChildPath ("\My Documents")
+    $NewPath = Join-Path $d.FullName -ChildPath ("\Documents")
+    Move-Item $path $NewPath
+    
+    # Do the same with "My Pictures" > Pictures
+    $path = Join-Path $d.FullName -ChildPath ("\My Pictures")
+    $NewPath = Join-Path $d.FullName -ChildPath ("\Pictures")
+    Move-Item $path $NewPath
+}
+```
+
+**Customization:** 
+- Change the `$dir` value to match your Folder Redirection data location
+- This script by default moves both "My Documents" and "My Pictures" into their modern equivalents
+- You may need to customize the script to match your specific needs
 
 ---
 
