@@ -1,0 +1,870 @@
+@echo off
+setlocal EnableExtensions EnableDelayedExpansion
+title BRIMBLE SPARKSTEEL: SLASHER OF THE FROST KING - Chapter 1
+
+goto :START
+
+rem -------------------- Helpers --------------------
+:SCENE
+cls
+echo ======================================================================
+echo  %~1
+echo ======================================================================
+echo.
+exit /b
+
+:PAUSE
+echo.
+pause
+exit /b
+
+:CHOICE
+set "cvar=%~1"
+set "cprompt=%~2"
+set "callowed=%~3"
+set "cans="
+:CHOICE_LOOP
+set /p "cans=%cprompt% "
+if not defined cans goto :CHOICE_LOOP
+set "cans=%cans:~0,1%"
+for /f "delims=%callowed%" %%A in ("%cans%") do (
+  echo.
+  echo Invalid choice. The dungeon is judging you.
+  echo.
+  goto :CHOICE_LOOP
+)
+set "%cvar%=%cans%"
+exit /b
+
+rem NOTE: All deaths must pass a message; if none is passed we generate a unique one.
+rem This avoids "ECHO is off." and prevents repeated stock lines.
+:DEATH
+set "DMSG=%~1"
+if not defined DMSG call :RANDOM_DEATHLINE
+call :SCENE "YOUR FINAL MOMENTS (IN GLORIOUS, OVERPRODUCED HD)"
+echo !DMSG!
+echo.
+echo Press any key to continue...
+pause >nul
+call :SCENE "YOU DIED (THE AUDIENCE IS DELIGHTED AND ALSO A LITTLE SICK)"
+echo The synth sting hits so hard it files for custody.
+echo The camera zooms in past your pores and into your regrets.
+echo The audience cheers, booing in harmony like a haunted choir.
+echo.
+echo The SHOW-NARRATOR delivers the recap voice-over with a velvet grin:
+echo "TRAGIC. CAMPY. PROFITABLE."
+echo "WE WILL REPLAY THAT IN SLOW MOTION DURING THE ADS."
+echo "YOUR FINAL EXPRESSION HAS BEEN LICENSED TO A LUNCHBOX."
+echo.
+echo Press any key to begin again from Chapter 1...
+pause >nul
+endlocal
+start "" "%~f0"
+exit
+
+:DIE
+call :DEATH "%~1"
+exit /b
+
+rem Unique fallback death lines (only used if someone forgets to pass a message).
+:RANDOM_DEATHLINE
+set /a _dl=!RANDOM! %% 12
+if "!_dl!"=="0" set "DMSG=You perish heroically in the same way a man perishes after saying 'watch this.' The dungeon records it in 4K and immediately adds a laugh track."
+if "!_dl!"=="1" set "DMSG=You discover the ancient truth: the fastest way out is usually down. Gravity accepts your offering with gratitude and no refunds."
+if "!_dl!"=="2" set "DMSG=Your courage spikes briefly, then is replaced by consequences. The consequences win by unanimous decision."
+if "!_dl!"=="3" set "DMSG=You die like a true professional: on camera, in costume, and with absolutely zero control over the soundtrack."
+if "!_dl!"=="4" set "DMSG=You make one small, reasonable choice. The dungeon responds by escalating to murder, because it is emotionally immature."
+if "!_dl!"=="5" set "DMSG=You become a cautionary tale told to future contestants. Children will chant your name at summer camps for centuries."
+if "!_dl!"=="6" set "DMSG=You attempt competence. The universe flags it as suspicious activity and removes you accordingly."
+if "!_dl!"=="7" set "DMSG=You go out not with a bang but with a contractual synth sting. Somewhere, an intern wins a bet."
+if "!_dl!"=="8" set "DMSG=You die as you lived: confused, damp, and being observed by unseen critics with snacks."
+if "!_dl!"=="9" set "DMSG=You perish because you trusted something labeled 'safe.' The label is promoted to executive producer."
+if "!_dl!"=="10" set "DMSG=You are defeated by the oldest villain of all: the plot. It has home-field advantage and a better agent."
+if "!_dl!"=="11" set "DMSG=You die dramatically, but the lighting is so flattering the audience briefly forgets to be sad."
+exit /b
+
+
+rem -------------------- Story --------------------
+:START
+set "PET=0"
+set "PETNAME="
+set "LOVE=0"
+set "LOVENAME="
+set "HAS_WAND=0"
+set "HAS_KEY=0"
+set "SAW_TOKEN=0"
+set "DEFEAT_TEXT="
+
+call :SCENE "BRIMBLE SPARKSTEEL: SLASHER OF THE FROST KING - CHAPTER 1"
+echo You are Brimble Sparksteel: gnome warrior, three-foot-two of barely-contained menace, and owner of the shiniest
+echo shield in the known world (and two unknown ones). You did not sign up for this. You signed up for the other
+echo quest — the one with a dental plan. Instead, a spotlight has found you. It has no source. It has never had a
+echo source. The SHOW-NARRATOR speaks from somewhere between your left ear and the fabric of existence itself, voice
+echo warm with the practiced enthusiasm of someone who gets paid per exclamation point:
+echo.
+echo "WELCOME, CONTESTANT PLEASE SCREAM CLEARLY FOR THE MICROPHONES"
+echo.
+echo Somewhere, a studio audience that does not exist erupts into applause.
+echo.
+echo Your quest: stop the Frost King before he turns the continent into a very large decorative ice sculpture. Your
+echo problem: the dungeon ahead has had some kind of identity crisis. The first floor is a gritty noir murder mystery.
+echo The second floor is a romance novel. The third floor is, reportedly, a cooking competition. Nobody who went in to
+echo confirm this has come back, though someone did slide a souffle under the door.
+echo.
+echo Your shield gleams. Your resolve holds.
+echo.
+echo The laugh track begins.
+echo.
+echo Infront of you, three doors. To find the Frost King, you must pick one.
+echo.
+echo  [1] Step into the door labeled "CAMP CRYSTALDRIFT".
+echo  [2] Step into the door labeled "THE STARFROST DERELICT".
+echo  [3] Step into the door labeled "HOGWAND ACADEMY (NO REFUNDS)".
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :CAMP
+if "!A!"=="2" goto :SHIP
+goto :ACADEMY
+
+
+rem ==========================================================
+rem  CAMP CRYSTALDRIFT
+rem ==========================================================
+:CAMP
+call :SCENE "CAMP CRYSTALDRIFT (SUSPICIOUSLY, AGGRESSIVELY 80S)"
+echo Pines loom. Fog swirls. A lake sits there like it was hired by a casting director who specializes in regret. A synth sting blasts from nowhere, and the SHOW-NARRATOR purrs: "CLASSIC LOCATION. SOMETHING IS WATCHING YOU. THAT'S JUST GOOD TELEVISION."
+echo.
+echo  [1] Approach the cabin.
+echo  [2] Check the tool shed.
+echo  [3] Go to the dock.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :CABIN
+if "!A!"=="2" goto :SHED
+goto :DOCK
+
+
+:CABIN
+call :SCENE "THE CABIN (ONE LIGHT, NO COMFORT, ZERO STARS ON YELP)"
+echo The door is ajar and the draft feels like a warning letter with perfect grammar. Inside are dusty bunks, a cracked mirror, and a VHS player humming like it knows spoilers. A tape is already loaded: "HOW TO SURVIVE EPISODE ONE."
+echo.
+echo  [1] Play the tape.
+echo  [2] Search the room instead.
+echo  [3] Leave immediately.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :TAPE
+if "!A!"=="2" goto :CABIN_SEARCH
+goto :CAMP
+
+
+:TAPE
+call :SCENE "THE TAPE PLAYS (WITH OR WITHOUT YOUR PERMISSION)"
+echo A host with too much hair says: "DON'T SPLIT UP. DON'T TRUST BREATHING DOORS. RUN FROM SYNTH." He leans in and whispers, "If you meet the MASKED FIGURE... don't challenge it." The tape ends and the TV knocks from the inside: three taps, patient and polite, like it’s requesting consent to be horrifying.
+echo.
+echo  [1] Unplug the TV.
+echo  [2] Leave now.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="1" goto :DIE "You yank the plug; the screen goes black; the knocking continues anyway. In the reflection, the host's grin is behind you, which is not how reflections negotiate reality. The TV turns back on by itself and plays your own future highlight reel, except its all falling, screaming, and one last desperate 'wait—' before the cabin politely deletes you."
+goto :CABIN_SEARCH
+
+
+:CABIN_SEARCH
+call :SCENE "CABIN SEARCH (BUNK BEDS HIDE THINGS)"
+echo You find a snowflake charm that’s cold with intention, like weather with a personal grudge. Outside, a wet dragging step approaches, and the shadow under the door moves like it has been here before and is annoyed you didn’t RSVP. The synth sting returns, smugly.
+echo.
+echo  [1] Hide in the closet.
+echo  [2] Sprint into the woods.
+echo  [3] Open the door, shield up.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :DIE "You squeeze into the closet like a guilty secret. The closet door opens from the wrong side, and you lock eyes with darkness that has a mortgage here. The audience chants 'CLO-SET CLO-SET' as you are briskly turned into a warning label."
+if "!A!"=="2" goto :WOODS
+goto :MASKED
+
+
+:SHED
+call :SCENE "TOOL SHED (PADLOCKED, POSSIBLY OPINIONATED)"
+echo The padlock is frosted shut even though it’s summer, which feels like a threat delivered in cursive. A key hangs nearby labeled: "DEFINITELY SAFE TO TAKE," which is the exact sentence a liar tattoos on their soul. The SHOW-NARRATOR adds, delighted: "THE DUNGEON HAS PROVIDED SIGNAGE. THAT'S CUSTOMER SERVICE."
+echo.
+echo  [1] Take the key.
+echo  [2] Shoulder the door.
+echo  [3] Knock politely.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="2" goto :DIE "You shoulder the door with heroic confidence. The lock replies with the serene indifference of a rich uncle at Thanksgiving. Your collarbone makes a noise that sounds like a tiny snapping breadstick, and the shed doesn't even bother to look impressed."
+if "!A!"=="3" goto :DIE "You knock politely. The shed knocks back—three huge booms—like it’s offended you assumed it was inanimate. The door swings open with the speed of a guillotine that got a promotion, and you learn that manners are not armor."
+set "HAS_KEY=1"
+call :SCENE "A KEY THAT WANTS TO MATTER"
+echo You take the key and the audience applauds like you finally read the tutorial. The SHOW-NARRATOR purrs: "ITEM ACQUIRED. CHEKHOV JUST SAT UP IN HIS GRAVE." The padlock seems suddenly less smug, which is satisfying.
+echo.
+echo  [1] Use the key now.
+echo  [2] Pocket it and leave.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :CAMP
+goto :SHED_OPEN
+
+
+:SHED_OPEN
+call :SCENE "INSIDE THE TOOL SHED (CONTENTS: CAMPING GEAR, ROPE, FEELINGS)"
+echo It’s a normal shed until it isn’t: a pet carrier vibrates like it’s about to give a TED Talk on survival. Inside, a tiny creature presses its face to the bars with the expression of an auditor who found your receipts. The SHOW-NARRATOR announces like a sponsor: "A SMALL ANIMAL, RATINGS INCREASE IMMEDIATELY."
+echo.
+echo  [1] Open the carrier.
+echo  [2] Leave it alone.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :CAMP_PETLESS
+set "PET=1"
+set "PETNAME=Nib"
+call :SCENE "A PET JOINS YOUR PARTY"
+echo You open the carrier and the creature hops out—part ferret, part gremlin, entirely attitude. It headbutts your boot, declares you acceptable, and immediately claims your shield like it has a deed. The SHOW-NARRATOR coos: "PLEASE DO NOT LET IT PRESS BUTTONS OR START SUBPLOTS."
+call :PAUSE
+goto :CAMP_PETLESS
+
+
+:CAMP_PETLESS
+call :SCENE "BACK TO CAMP (THE SYNTH MUSIC HAS RETURNED)"
+echo The fog thickens like it got stage directions and a union break schedule. Something moves out there with the calm pace of a villain who knows the edit will make them look cool. The lake and the woods both seem eager to ruin your evening.
+echo.
+echo  [1] Head to the dock.
+echo  [2] Head back to the cabin.
+echo  [3] Cut through the woods toward the mountains.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :DOCK
+if "!A!"=="2" goto :CABIN
+goto :WOODS
+
+
+:DOCK
+call :SCENE "THE DOCK (THE LAKE DOES NOT BLINK)"
+echo The water is black and still, like a mirror that’s refusing to show anything innocent. A sign reads DO NOT FEED THE LAKE—no explanation, because the lake’s legal team is strong. Frost-roses sit perfect and wrong, and you feel the Frost King in them like a cold thought that isn’t yours.
+set "SAW_TOKEN=1"
+echo.
+echo  [1] Take a rose.
+echo  [2] Get in the boat.
+echo  [3] Whisper: "We are not doing this today."
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :DIE "You take a rose. The lake ripples once—slow, deliberate—like it just signed for you. Something pale carries and gently takes you by the ankles with the customer-service tone of a nightmare: 'Hello. We noticed you touched the bouquet.' You are dragged under while the roses remain above, posed perfectly for the promotional still."
+if "!A!"=="3" goto :DOCK_WHISPER
+goto :BOAT
+
+
+:DOCK_WHISPER
+call :SCENE "NEGOTIATING WITH A LAKE (SURPRISINGLY EFFECTIVE)"
+echo You whisper a firm boundary like you’re talking to a coworker who keeps eating your lunch. The lake pauses, sulks, and nudges the boat closer as if begrudgingly respecting your communication skills. The SHOW-NARRATOR hisses, offended: "A LAKE HAS NEVER BACKED DOWN ON THIS SHOW."
+call :PAUSE
+goto :BOAT
+
+
+:BOAT
+call :SCENE "ROWBOAT (THE FOG HAS OPINIONS ABOUT NAVIGATION)"
+echo Fog closes behind you like a curtain, and then the boat stops like the lake hit a remote. A masked figure rises and walks on the water, because physics is for background characters. The synth sting hits again, proud of its own timing.
+echo.
+echo  [1] Row harder.
+echo  [2] Stand and fight.
+if "!PET!"=="1" echo  [3] Ask !PETNAME! to do something chaotic.
+echo.
+if "!PET!"=="1" (
+  call :CHOICE A "Choose 1-3:" "123"
+) else (
+  call :CHOICE A "Choose 1-2:" "12"
+)
+if "!A!"=="1" goto :DIE "You row like your life depends on it. The oars snap left then right like the lake is doing comedy timing, and you are left holding two sad sticks and a dream. The masked figure politely steps closer on the water, pauses for the camera, then taps the boat once; it flips like a pancake and you become the filling."
+if "!A!"=="2" goto :BOAT_FIGHT
+if "!A!"=="3" goto :CAMP_ESCAPE_PET
+goto :BOAT
+
+
+:BOAT_FIGHT
+call :SCENE "SHIELD VS LAKE ENTITY (POINTS FOR EFFORT)"
+echo You stand, raise your shield, and the boat rolls like it’s been waiting to betray you. You hit the water; it’s cold with the specific focus of a personal vendetta. When you surface, the rope bumps your hand, like the lake is offering a very rude second chance.
+echo.
+echo  [1] Climb back in.
+echo  [2] Swim for shore.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="1" goto :DIE "You climb back in and find the masked figure already in the boat, politely waiting like this was a reservation. It adjusts your seat with the tenderness of a murderer fluffing a pillow, then sends the boat spinning; you discover dizziness, panic, and drowning can be a group project."
+goto :SWIM_ESCAPE
+
+
+:SWIM_ESCAPE
+call :SCENE "SWIMMING WITH CONVICTION (A WARRIOR'S LOWEST MOMENT)"
+echo You swim with desperate efficiency, achieving the rare heroic look of “drowned rat with a shield.” You claw onto the far bank and lie there while the camera lingers, because the audience loves authenticity. The SHOW-NARRATOR says, diplomatically: "UNCONVENTIONAL. BUT EFFECTIVE."
+call :PAUSE
+goto :HUB
+
+
+:CAMP_ESCAPE_PET
+call :SCENE "PET INTERVENTION (CHAOTIC GOOD, AS ALWAYS)"
+echo !PETNAME! launches at the masked figure’s face like it’s correcting a cosmic mistake. The figure flails—actually flails—and the boat lurches free as if grateful for the distraction. You paddle with your hands because dignity is optional, and you reach shore anyway.
+call :PAUSE
+goto :HUB
+
+
+:WOODS
+call :SCENE "THE WOODS (WHERE FOOTSTEPS ARE OPINIONS)"
+echo The trees close in and the fog turns directional, like it’s herding you for a better shot. Heavy footsteps follow—slow, unhurried, confident—like something that already knows how this scene ends. The SHOW-NARRATOR whispers: "THE WOODS TEST WELL. PLEASE PANIC FOR OUR DEMOGRAPHICS."
+echo.
+echo  [1] Run in a straight line.
+echo  [2] Rig a trap with rope and a log.
+echo  [3] Climb a tree.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :DIE "You run, and the woods let you believe it’s working—right until a root trips you like it trained for this. You go down in slow motion, arms windmilling like an inflatable tube man, and the camera catches your face doing all five stages of grief at once. The footsteps do not speed up; the villain respects routine."
+if "!A!"=="3" goto :TREE_CLIMB
+goto :TRAP_WOODS
+
+
+:TREE_CLIMB
+call :SCENE "UP A TREE (VERTICAL STRATEGY)"
+echo You climb high enough that the fog becomes someone else’s problem. The masked figure passes below, stops under your exact branch, and looks up—because villains are always allowed to look up. The synth sting quietly high-fives itself.
+echo.
+echo  [1] Go still.
+echo  [2] Drop onto it.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="1" goto :DIE "You go perfectly still, but it has more patience than you have lungs. Your chest turns into a drum solo, your body betrays you with a tiny gasp, and the figure points up as if giving a tour: 'The snack is here.' You learn the difference between 'quiet' and 'invisible.'"
+goto :TREE_DROP
+
+
+:TREE_DROP
+call :SCENE "GNOME LANDS ON MONSTER (ONCE IN A LIFETIME CINEMA)"
+echo You drop onto its shoulders; it staggers, genuinely offended by surprise as a concept. You sprint uphill through thinning fog and feel the genre change behind you like a channel switch. Ahead, a metal door in the hillside hums like it’s from a different franchise.
+call :PAUSE
+goto :METAL_DOOR
+
+
+:TRAP_WOODS
+call :SCENE "THE TRAP (ROPE, LOG, OPTIMISM)"
+echo You rig a log trap with the faith of someone who has watched too many movies and learned the wrong lessons. The footsteps approach, steady and unbothered, like they’ve seen your blueprint. The SHOW-NARRATOR squeals: "PHYSICS, THE AUDIENCE LOVES PHYSICS"
+echo.
+echo  [1] Wait for the perfect moment.
+echo  [2] Trigger now.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :DIE "You yank early; the log misses the villain and comes back for you like a boomerang with unresolved anger. The impact launches you into the air in a pose that would be heroic if it wasn't immediately followed by landing. The audience laughs so hard someone drops their popcorn into a life lesson."
+call :SCENE "THE MASKED FIGURE EATS LOG"
+echo The log connects with a thick thud and the figure staggers like it’s updating its opinions about you. You spot a metal door set into the hillside—frosted, beeping, and clearly not part of any camp brochure. You have a short window and a long life plan.
+echo.
+echo  [1] Sprint for the door.
+echo  [2] Press the advantage.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :DIE "You press the advantage. The villain absorbs your bravery, files it, and responds with a single calm swing that edits you out of existence. The camera catches your last thought: 'I should have sprinted.' The narrator calls it a 'bold creative choice.'"
+goto :METAL_DOOR
+
+
+:MASKED
+call :SCENE "YOU OPENED THE DOOR (THE DOOR WAS WAITING)"
+echo A tall figure in a cracked mask fills the doorway, breathing like it read a manual titled Villainy for Beginners. It holds a camping axe with the relaxed grip of someone who never needs to rush. The synth sting hits on cue like it’s paid per stab.
+echo.
+echo  [1] Apologize and back away.
+echo  [2] Swing at its knees with your shield.
+echo  [3] Invite it to discuss its feelings.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :DIE "You apologize and back up politely, because you were raised right and this is how you die. Your heel finds the one missing floorboard in the cabin like it was magnetized to manners. Gravity takes you instantly, and the villain leans in like it’s reading the moral out loud."
+if "!A!"=="3" goto :DIE "You offer to discuss feelings. The masked figure pauses, as if considering vulnerability. Then it chooses axe-based communication, proving therapy is not covered by its plan. The audience claps like they’re at a very mean graduation."
+goto :MASKED_SHIELD
+
+
+:MASKED_SHIELD
+call :SCENE "KNEES: A WARRIOR'S ESSAY ON STRUCTURAL WEAK POINTS"
+echo You smack its knees; it buckles just enough to be insulting. You bolt into the fog like you have a meeting with survival, and it is running late. Somewhere ahead, a metal door in the rock beeps like technology having an identity crisis.
+call :PAUSE
+goto :METAL_DOOR
+
+
+:METAL_DOOR
+call :SCENE "A METAL DOOR IN THE ROCK (THEMATICALLY CONFUSED)"
+echo A steel door is embedded in stone, frosted around the frame and beeping like a spaceship that took a wrong turn at Albuquerque. Footsteps approach behind you—calm, steady, confident—and the keypad asks for a HOUSE CODE like this is normal. You hate how plausible it feels.
+echo.
+echo  [1] Type 1984.
+echo  [2] Type 1313.
+if "!HAS_KEY!"=="1" echo  [3] Try the key from the shed.
+echo.
+if "!HAS_KEY!"=="1" (
+  call :CHOICE A "Choose 1-3:" "123"
+) else (
+  call :CHOICE A "Choose 1-2:" "12"
+)
+if "!A!"=="1" goto :HUB
+if "!A!"=="3" goto :HUB
+goto :DIE "You enter 1313 with theatrical confidence. The keypad flashes 'CUTE.' and shocks you so hard your ancestors feel it. The masked figure arrives behind you, nods approvingly at the keypad's work, and you die knowing even machines can be haters."
+
+
+rem ==========================================================
+rem  THE STARFROST DERELICT
+rem ==========================================================
+:SHIP
+call :SCENE "THE STARFROST DERELICT (CORRIDORS OF INSTITUTIONAL REGRET)"
+echo Red emergency lights pulse over frosted steel, and a sign says DON'T OPEN THE VENTS like the ship is begging you to have one normal thought. The SHOW-NARRATOR sounds thrilled: "SPACE. THE FINAL FRONTIER. ALSO THE FINAL PLACE HR CAN'T SAVE YOU." Something skitters far away like it’s laughing quietly.
+echo.
+echo  [1] Head to Crew Quarters.
+echo  [2] Head to the Engine Room.
+echo  [3] Open the vents.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :QUARTERS
+if "!A!"=="2" goto :ENGINE
+goto :DIE "You pry open the vent, telling yourself curiosity is brave. Something pale and fast drops onto you like it had a calendar reminder, and you realize the ship's ventilation system is also its dating app: it matches predators with warm bodies. You were a 'perfect match.'"
+
+
+:QUARTERS
+call :SCENE "CREW QUARTERS (SLEEP WAS A LIE THEY TOLD THEMSELVES)"
+echo Frost-handprints cover the walls like a desperate applause track. A survivor engineer stands in the corner with a wrench and the thousand-yard stare of someone who has filed seventy mental incident reports. She looks at you like you might be rescue or just another problem.
+echo.
+echo  [1] Introduce yourself politely.
+echo  [2] Demand answers immediately.
+if "!PET!"=="1" echo  [3] Let !PETNAME! approach first.
+echo.
+if "!PET!"=="1" (
+  call :CHOICE A "Choose 1-3:" "123"
+) else (
+  call :CHOICE A "Choose 1-2:" "12"
+)
+if "!A!"=="2" goto :DIE "You demand answers like youre the manager of Space. She panics, swings, hits a coolant pipe, and the corridor becomes a sauna of rage and steam. You die in the fog while the SHOW-NARRATOR chirps: 'NOW THAT'S WHAT WE CALL A HOT OPEN.'"
+if "!A!"=="3" goto :LOVE_INTRO_PET
+goto :LOVE_INTRO
+
+
+:LOVE_INTRO
+set "LOVE=1"
+set "LOVENAME=Vexa"
+call :SCENE "VEXA (ENGINEER. SURVIVOR. CONTRACTUAL LOVE INTEREST.)"
+echo "Vexa," she says, exhaling like she just found proof the universe still allows allies. "Engineer. I fix things and survive things, and lately only one of those is going well." She points toward the cryo-core: "The Frost King hijacked it and made it a throne. Whatever he was, he’s now a weather event with a crown."
+echo.
+echo  [1] Go together.
+echo  [2] You scout alone.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :DIE "You go alone, because confidence is a disease with no cure. When you return, frost handprints cover the sealed hatch like a final warning written in cold, and the silence answers every question you never asked. You die realizing teamwork was free."
+goto :SHIP_HUNT
+
+
+:LOVE_INTRO_PET
+set "LOVE=1"
+set "LOVENAME=Vexa"
+call :SCENE "PET DIPLOMACY (UNEXPECTED CREDENTIAL)"
+echo !PETNAME! sniffs her boot and sits, judging you both with the seriousness of a tiny courtroom. Vexa watches, then nods once: "Fine. If the gremlin approves you, I’ll try. Let's go end the freezer-king before the ship files for bankruptcy."
+echo.
+echo  [1] Head for the cryo-core together.
+echo.
+call :CHOICE A "Choose 1:" "1"
+goto :SHIP_HUNT
+
+
+:ENGINE
+call :SCENE "ENGINE ROOM (SILENT, ICED, AND JUDGMENTAL)"
+echo An arc-rod hangs on the wall labeled NOT A WAND, which is exactly what a wand in denial would say. The engines are off in the way something is off when it’s obeying a threat. Above you, vent-noises skitter like they’re tracking the warmest thing in the room (you).
+echo.
+echo  [1] Take the arc-rod.
+echo  [2] Leave it.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="1" set "HAS_WAND=1"
+
+call :SCENE "SOMETHING SKITTERS (THE VENTS HAVE OPINIONS)"
+echo The door clicks shut behind you like punctuation. The skittering gets closer, wet and eager, and you realize hiding is a strategy but not a guarantee. If you grabbed the rod, you can also attempt wizard improv, which feels irresponsible but on-brand.
+echo.
+echo  [1] Hide under the console.
+echo  [2] Smash the console.
+if "!HAS_WAND!"=="1" echo  [3] Point the rod and say something wizardy.
+echo.
+if "!HAS_WAND!"=="1" (
+  call :CHOICE A "Choose 1-3:" "123"
+) else (
+  call :CHOICE A "Choose 1-2:" "12"
+)
+if "!A!"=="1" goto :DIE "You hide. Something warm drips onto your hand—warm in the exact way predators are warm. The lights dim one by one like a countdown, and you realize the creature isn't hunting by sight. Its hunting by 'this guy seems snackable.'"
+if "!A!"=="2" goto :DIE "You smash the console. Sparks and smoke fill the room, the door stays shut, and the ship's last gift to you is a dramatic silhouette as you are eaten off-screen. The audience calls it 'tasteful.'"
+if "!A!"=="3" goto :ENGINE_WAND
+goto :SHIP_HUNT
+
+
+:ENGINE_WAND
+call :SCENE "NOT A WAND (AND YET)"
+echo You shout: "FROSTO-NOT-TOUCH-ME" and the rod crackles with delighted violence. The vent creature shrieks, retreats, and the door unlocks with an embarrassed click, like it regrets doubting you. The SHOW-NARRATOR mutters: "THAT IS NOT THE RATED USE CASE. AND YET."
+call :PAUSE
+goto :SHIP_HUNT
+
+
+:SHIP_HUNT
+call :SCENE "CORRIDOR TO THE CRYO-CORE (THE LIGHTS KNOW SOMETHING)"
+echo The hallway flickers like it’s trying to communicate “RUN” in Morse code. A junction appears: Cryo-Core to the left, Med Bay to the right, which is dungeon-speak for “boss fight now” or “side quest that hurts.” Vexa keeps her wrench up and her expectations low.
+echo.
+echo  [1] Go to the Cryo-Core directly.
+echo  [2] Detour to the Med Bay first.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :MEDBAY
+goto :CLIMAX_ENTRY
+
+
+:MEDBAY
+call :SCENE "MED BAY (WHITE LIGHT, RED HISTORY)"
+echo The Med Bay is clean in the way crime scenes are clean when someone had time and motive. A sealed locker bears an ice-crown crest, and you feel the Frost King in it like a storm behind your teeth. The air tastes like “do not touch,” which means it’s probably important.
+set "SAW_TOKEN=1"
+echo.
+echo  [1] Try to open the locker.
+echo  [2] Leave it and go back.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :SHIP_HUNT
+
+if "!HAS_KEY!"=="1" (
+  call :SCENE "THE KEY AND THE LOCK HAVE AN UNDERSTANDING"
+  echo Your key fits like it was made for this, which is comforting only if you enjoy being in a plan. Inside is a frost-rose in a glass case, perfect and wrong, like a heart that decided spite is a lifestyle. Vexa gives you a look that says “we will discuss your choices later, assuming we survive.”
+  echo.
+  echo  [1] Take the rose case.
+  echo  [2] Smash it now.
+  echo.
+  call :CHOICE A "Choose 1-2:" "12"
+  if "!A!"=="2" goto :DIE "You smash the case. The rose screams without sound and the temperature drops so fast your thoughts get frostbite. Your final sensation is your eyebrows crystallizing, which is not how you expected to go out. The SHOW-NARRATOR whispers: 'BEAUTIFUL. VERY EXPENSIVE CGI.'"
+  call :SCENE "POCKETED"
+  echo You take the case carefully. It is cold, aware, and absolutely going to be relevant in a way you will not enjoy. The corridor lights flicker once like theyre pleased with the drama.
+  echo.
+  echo  [1] Continue to the Cryo-Core.
+  echo.
+  call :CHOICE A "Choose 1:" "1"
+  goto :CLIMAX_ENTRY
+)
+goto :DIE "You pry the locker open. It blasts cryo-fog into your face with surgical precision, flash-freezing your eyebrows into tiny ice sculptures. You die with a surprised expression that the audience immediately ships as a reaction gif."
+
+
+rem ==========================================================
+rem  HOGWAND ACADEMY
+rem ==========================================================
+:ACADEMY
+call :SCENE "HOGWAND ACADEMY (HOUSE POINTS ARE CURRENCY AND ALSO THREATS)"
+echo Portraits complain about the indoor snow like they pay tuition here. A Sorting Hat clears its throat and says, "CHOOSE A HOUSE," with the tone of a bureaucrat holding a tiny grudge. The SHOW-NARRATOR murmurs: "SCHOOL EPISODES TEST WELL. CHILDREN LOVE DRAMA. ADULTS LOVE WATCHING CHILDREN HAVE DRAMA."
+echo.
+echo  [1] House GRYFFINISH.
+echo  [2] House SLYTHERIN-ISH.
+echo  [3] House HUFFLE-ISH.
+echo  [4] Refuse all houses.
+echo.
+call :CHOICE A "Choose 1-4:" "1234"
+if "!A!"=="4" goto :DIE "You refuse the hat. The hat bites your ear with shocking jaw strength, then whispers: 'CREATIVE CONSEQUENCES MEANS ME.' The portraits clap like you just volunteered for detention in the afterlife."
+goto :HOUSE
+
+
+:HOUSE
+call :SCENE "ORIENTATION (WELCOME TO YOUR ACADEMIC NIGHTMARE)"
+echo A Prefect appears with a clipboard and the smile of someone who enjoys rules recreationally. "House standings," they chirp: Gryffinish has twelve points, Slytherin-ish is at negative four (they are investigating), and Huffle-ish is somehow crushing it by being nice to the portraits. Your schedule includes Dueling Club, the Forbidden Corridor, and “Survive Until Dinner, which feels like a threat.
+echo.
+echo  [1] Go to Dueling Club.
+echo  [2] Explore the Forbidden Corridor.
+echo  [3] Sneak to the Owlery.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="1" goto :DUEL
+if "!A!"=="2" goto :FORBIDDEN
+goto :OWLERY
+
+
+:OWLERY
+call :SCENE "THE OWLERY (THE OWLS HAVE OPINIONS AND THEY ARE SHARING THEM)"
+echo Owls stare at you with the moral judgment of a tenure committee that hates fun. One cage rattles with something that is definitely not an owl, and it sneezes glitter like its making a petty art statement. The owls pretend this is normal to protect their own mental health.
+echo.
+echo  [1] Free it.
+echo  [2] Leave it.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" (
+  call :SCENE "OWLERY (DEPARTURE)"
+  echo You leave, and the creature watches you go with an expression that will haunt you later in a very personal way. The owls all look away at once, like they just transferred liability. The corridor feels colder, as if it respects pettiness.
+  call :PAUSE
+  goto :DUEL
+)
+set "PET=1"
+set "PETNAME=Nib"
+call :SCENE "PET ACQUIRED: !PETNAME!"
+echo You unlatch the cage and the creature hops onto your shoulder like you’re the correct bus stop. It immediately begins disliking doors, which is relatable and also ominous. The SHOW-NARRATOR cheers: "COMPANION ACQUIRED. HOUSE POINTS AWARDED. HUZZAH."
+call :PAUSE
+goto :DUEL
+
+
+:DUEL
+call :SCENE "DUELING CLUB (NO WAIVERS, NO REFUNDS, NO PROMISES)"
+echo You’re handed a cracked wand that smells faintly of burnt ambition and budget cuts. Your opponent wears an expensive scarf and a smirk they’ve clearly rehearsed in the mirrors. The instructor says “try not to die” and immediately leaves like this is standard policy.
+set "HAS_WAND=1"
+echo.
+echo  [1] Cast a spell.
+echo  [2] Throw your shield.
+echo  [3] Bonk them with the shield.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="2" goto :DIE "You throw the shield. It ricochets off a chandelier, bounces off an armor statue, and returns like a boomerang with personal issues—directly into your face. The instructor writes 'ICONIC' on the clipboard while you become a cautionary mural."
+if "!A!"=="1" goto :DUEL_SPELL
+goto :DUEL_BONK
+
+
+:DUEL_SPELL
+call :SCENE "SPELLCASTING (THE WAND IS DOING ITS BEST)"
+echo You shout "EXPELLI-NO" and the wand fires cold confetti with shocking confidence. Your opponent sits down hard and rethinks their entire personality for about six seconds. A door appears: "DIRECT ACCESS — FROST KING WING," because safety is a myth and administration is a ghost story.
+echo.
+echo  [1] Take the door.
+echo  [2] Visit the Forbidden Corridor first.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :FORBIDDEN
+goto :CLIMAX_ENTRY
+
+
+:DUEL_BONK
+call :SCENE "WARRIOR SOLUTIONS FOR WIZARD PROBLEMS"
+echo You bonk the bully’s knees with your shield and they go down like a drama student who studied falling. The instructor rubs their eyes and says, "Technically not a spell, but the learning objectives are satisfied." A door appears to the Frost King wing with a gold star sticker that nobody admits placing.
+echo.
+echo  [1] Take the door.
+echo.
+call :CHOICE A "Choose 1:" "1"
+goto :CLIMAX_ENTRY
+
+
+:FORBIDDEN
+call :SCENE "THE FORBIDDEN CORRIDOR (FORBIDDEN: EVERYONE, REALLY)"
+echo The temperature drops and the portraits refuse to look ahead like they’re protecting their own sanity. Something scrapes behind the walls with slow, deliberate confidence. A note on the floor reads: "If you hear breathing and it isn't yours, it has been here longer than you."
+echo.
+echo  [1] Continue deeper.
+echo  [2] Turn back.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :HOUSE
+
+call :SCENE "THE CORRIDOR RESPONDS"
+echo The walls rotate slightly (illegal), the floor tilts (rude), and the door behind you closes (final). Two options remain, and both feel like a dare: a vent on the left or a plain wooden door on the right. The SHOW-NARRATOR whispers: "THIS IS WHAT WE CALL A CONTENT FORK."
+echo.
+echo  [1] Crawl into the vent.
+echo  [2] Kick the wooden door.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="1" goto :DIE "You crawl into the vent. It’s warm in a way vents should never be warm, like the vent is breathing. Something in there wraps around you with the tenderness of a horror movie hug, and you die realizing the school’s maintenance budget went entirely into murder."
+goto :HUB
+
+
+rem ==========================================================
+rem  INTERMISSION ATRIUM
+rem ==========================================================
+:HUB
+call :SCENE "THE INTERMISSION ATRIUM (THE DUNGEON'S SHARED LOBBY OF BAD IDEAS)"
+echo You stumble into a vast atrium that looks like three set designers lost a bet and all got punished. On one side: a camp trophy case full of fog and unpaid child support; on another: a bulkhead door labeled "NO ONE IS RESPONSIBLE FOR WHAT'S IN THE VENTS"; above: portraits arguing with flickering emergency lights about union breaks. In the center stands a single pedestal of black ice, holding a frost-rose under glass like a museum exhibit titled 'DON'T.'
+echo.
+echo The SHOW-NARRATOR whispers with showman delight: "AH. THE MID-EPISODE TRANSITION SPACE. WHERE ALL GENRES SHAKE HANDS AND SPREAD GERMS."
+echo.
+echo  [1] Follow the crown-marked archway (cold air pouring through).
+echo  [2] Inspect the rose case up close (terrible curiosity tax).
+if "!PET!"=="1" echo  [3] Let !PETNAME! inspect it first (professional gremlin instincts).
+echo.
+if "!PET!"=="1" (
+  call :CHOICE A "Choose 1-3:" "123"
+) else (
+  call :CHOICE A "Choose 1-2:" "12"
+)
+if "!A!"=="2" goto :DIE "You touch the glass. It sticks to your fingertips like the dungeon just filed paperwork to keep you. The rose shifts inside as if it turned its head, despite not having a head, and your reflection smiles first. The SHOW-NARRATOR gasps: 'OH THAT'S A GREAT SHOT.' It is the last compliment you ever receive."
+if "!A!"=="3" goto :PET_ROSE
+goto :CLIMAX_ENTRY
+
+
+:PET_ROSE
+call :SCENE "PET INSTINCT (THE ANIMAL KNOWS THINGS)"
+echo !PETNAME! circles the pedestal, sniffs once, and sneezes directly onto a hidden rune. The rune crumbles like it was held together by arrogance and overtime, and the air warms by exactly one degree—still deadly, but now with hope. The SHOW-NARRATOR grumbles: "ADDING RUNE-SNEEZING TO THE THREAT ASSESSMENT. AGAIN."
+echo.
+echo  [1] Proceed through the crown-marked archway.
+echo.
+call :CHOICE A "Choose 1:" "1"
+goto :CLIMAX_ENTRY
+
+
+rem ==========================================================
+rem  THE FROST KING
+rem ==========================================================
+:CLIMAX_ENTRY
+call :SCENE "THE THRONE APPROACH (THE AIR TASTES LIKE WINTER AND BAD DECISIONS)"
+echo Black ice stretches ahead and banners hang frozen mid-billow like the room itself is holding its breath. If Vexa isn’t with you yet, she steps from the shadows with a wrench and a survival plan: "Don’t go alone. Alone gets edited out." If she is with you, she just nods like someone who has already decided to live out of spite.
+if "!LOVE!"=="0" (
+  set "LOVE=1"
+  set "LOVENAME=Vexa"
+)
+echo.
+echo A voice beyond the doors says, calm and cracked at the edges: "Kneel. And I will make you part of something that lasts."
+echo.
+echo  [1] Kick the doors open.
+echo  [2] Open them quietly.
+echo  [3] Shout a one-liner first.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="3" goto :DIE "Your one-liner is perfect. The icicles triggered by it are also perfect. The audience loves irony more than it loves you being alive."
+goto :THRONE_ROOM
+
+
+:THRONE_ROOM
+call :SCENE "THE FROST KING (AT LAST, THE REASON FOR ALL OF THIS)"
+echo He sits on a hoarfrost throne, crown catching light wrong like it was forged for a purpose older than beauty. Beside him, a frost-rose under glass anchors the blizzard like a petty little heart that refuses to quit. He smiles gently, like a knife trying to be polite, and says: "Little warrior. Let me improve you."
+echo.
+echo  [1] Charge with your shield.
+echo  [2] Talk to him.
+echo  [3] Go for the rose case.
+if "!HAS_WAND!"=="1" echo  [4] Point your wand-ish thing at him.
+echo.
+if "!HAS_WAND!"=="1" (
+  call :CHOICE A "Choose 1-4:" "1234"
+) else (
+  call :CHOICE A "Choose 1-3:" "123"
+)
+if "!A!"=="1" goto :FROST_CHARGE
+if "!A!"=="2" goto :FROST_TALK
+if "!A!"=="3" goto :FROST_ROSE
+if "!A!"=="4" goto :FROST_SPELL
+goto :THRONE_ROOM
+
+
+:FROST_CHARGE
+call :SCENE "SHIELD RAISED, MIND MADE UP"
+echo You charge and the Frost King raises a hand; ice spears bloom in the air like he’s decorating for your funeral. You can brute-force it or use the throne as cover like someone who wants to keep their organs inside their body. Vexa tightens her wrench grip like she’s about to file a complaint with reality.
+echo.
+echo  [1] Bash through.
+echo  [2] Cut left behind the throne.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="1" goto :DIE "You bash through and almost make it, which is the cruelest distance. The last spear doesn’t stop you; it redirects you into the wall at high speed, and the audience rates it 'athletic tragedy.'"
+goto :THRONE_COVER
+
+
+:THRONE_COVER
+call :SCENE "BEHIND THE THRONE (CLOSE ENOUGH TO HEAR THE STORM THINK)"
+echo Frost crawls toward your hands from the stone like it’s trying to sign you up for a loyalty program. The rose case is close—one lunge—and the crown is closer than you’d like to admit. Somewhere, the SHOW-NARRATOR whispers: "THIS IS THE MONEY SHOT."
+echo.
+echo  [1] Break the rose case.
+echo  [2] Grab the crown.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :DIE "You grab the crown. It whispers that you deserve it, and for one fatal second you believe it. The Frost King turns and recognizes that look like an old friend."
+goto :ROSE_BREAK_PATH
+
+
+:FROST_TALK
+call :SCENE "WORDS AGAINST WINTER"
+echo You tell him the truth: this isn’t power, it’s loneliness with a crown and a weather budget. His expression flickers—briefly human—briefly dangerous—and the blizzard hesitates like it’s waiting for his permission to continue. Vexa mutters, "You are either very brave or very stupid," which is a fair review.
+echo.
+echo  [1] Step closer.
+echo  [2] Use the hesitation to sprint for the rose.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="1" goto :DIE "You step closer. He touches your forehead like a blessing and your thoughts freeze mid-sentence, one by one, like candles going out. The audience applauds the tragedy like it’s art."
+goto :ROSE_BREAK_PATH
+
+
+:FROST_SPELL
+call :SCENE "WAND-ADJACENT INTERVENTION (FOR SCIENCE)"
+echo You point your arc-rod or bent wand and yell, "EXPECTO NOT DYING TODAY" The device sparks and the room flinches like you slapped it with electricity, which is basically what happened. The Frost King looks annoyed, and annoyance is the closest thing to hope the dungeon allows.
+echo.
+echo  [1] Keep casting.
+echo  [2] Sprint for the rose while he’s distracted.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="1" goto :DIE "You keep casting. He freezes the tool solid in one bored gesture; it shatters in your hand, and your confidence follows shortly after. The narrator calls it a teachable moment."
+goto :ROSE_BREAK_PATH
+
+
+:FROST_ROSE
+call :SCENE "STRAIGHT FOR THE ANCHOR (NO PREAMBLE)"
+echo You sprint for the pedestal and the Frost King stands too fast, too fluid, too cold. The case is right there, but the ice under your boots feels eager to volunteer as your downfall. If you have a gremlin companion, it looks thrilled to commit crimes.
+echo.
+echo  [1] Shoulder-check the pedestal.
+echo  [2] Lift the case carefully.
+if "!PET!"=="1" echo  [3] Send !PETNAME! at the runes.
+echo.
+if "!PET!"=="1" (
+  call :CHOICE A "Choose 1-3:" "123"
+) else (
+  call :CHOICE A "Choose 1-2:" "12"
+)
+if "!A!"=="2" goto :DIE "You lift it carefully. Ice climbs your boots and locks you in place like the dungeon punishing manners. The Frost King strolls over to end the scene at his leisure."
+if "!A!"=="3" goto :ROSE_PET_HELP
+goto :ROSE_BREAK_PATH
+
+
+:ROSE_PET_HELP
+call :SCENE "PET TACTICAL UNIT (ANTI-RUNE OPERATIONS)"
+echo !PETNAME! scratches runes off the base like it’s deleting hateful comments from existence. The case flickers and loosens as the trap loses confidence in itself. Vexa shouts, "NOW" like she’s timing an engine restart.
+goto :ROSE_BREAK_PATH
+
+
+:ROSE_BREAK_PATH
+call :SCENE "THE CASE AND THE CHOICE (TWO STEPS FROM THE END)"
+echo You have the case within reach and the Frost King is close enough that the cold feels personal. He says, softly, almost confused: "Don't." The audience holds its breath like it’s waiting to see if you’re brave or content.
+echo.
+echo  [1] Smash the case.
+echo  [2] Hold it up and negotiate.
+echo  [3] Throw it at the throne.
+echo.
+call :CHOICE A "Choose 1-3:" "123"
+if "!A!"=="3" goto :DIE "You throw it. He freezes it mid-air, reshapes it into a spear with calm precision, then gives you an apologetic look that says: you wrote this ending yourself."
+if "!A!"=="2" goto :HOSTAGE
+goto :SMASH
+
+
+:HOSTAGE
+call :SCENE "HOSTAGE NEGOTIATION (WITH WINTER ITSELF)"
+echo "Stop or I break it," you say, holding the case between you like a line in the snow. He laughs once—small, fractured—and replies: "Break it. Prove you understand winter." The cruelty in it is quiet, which is somehow worse.
+echo.
+echo  [1] Break it.
+echo  [2] Offer it back.
+echo.
+call :CHOICE A "Choose 1-2:" "12"
+if "!A!"=="2" goto :DIE "You offer it back. He accepts with a genuinely warm smile, and the case bonds to your hands like gratitude turned into a trap. The narrator purrs: 'POETIC,' and the audience applauds like monsters."
+goto :SMASH
+
+
+:SMASH
+call :SCENE "THE SHATTER (FINALLY)"
+echo You smash the case and the rose fractures into cold glitter; the blizzard stutters like it lost its script supervisor. The Frost King staggers—less storm, more person—for one fragile second. Vexa steps forward, wrench raised, and says, "Your call," like she trusts you more than she trusts the weather.
+echo.
+echo  [1] Finish it quickly.
+echo  [2] Spare him; end the crown.
+if "!PET!"=="1" echo  [3] Let !PETNAME! decide.
+echo.
+if "!PET!"=="1" (
+  call :CHOICE A "Choose 1-3:" "123"
+) else (
+  call :CHOICE A "Choose 1-2:" "12"
+)
+if "!A!"=="1" (
+  set "DEFEAT_TEXT=You end it before the crown can reclaim him. The storm collapses into ordinary snow, suddenly confused and unemployed. The broadcast respects the clean ending with visible irritation."
+  goto :DEFEAT_KING
+)
+if "!A!"=="2" (
+  set "DEFEAT_TEXT=You spare him. The crown melts like a lie losing confidence, and he collapses alive enough to remember. The audience boos mercy; you leave anyway."
+  goto :DEFEAT_KING
+)
+if "!A!"=="3" (
+  set "DEFEAT_TEXT=!PETNAME! sniffs the crown, decides it is garbage, and pushes it away with one decisive paw. The Frost King goes still—alive, emptied—and the dungeon has to invent a new awards category out of spite."
+  goto :DEFEAT_KING
+)
+goto :SMASH
+
+
+:DEFEAT_KING
+call :SCENE "THE FROST KING IS DEFEATED"
+echo The blizzard loses coherence all at once, like it ran out of hate to power it. The SHOW-NARRATOR whispers: "WELL DONE. WE ARE SELLING THIS MOMENT AS A COLLECTIBLE." Snow falls normally for the first time all night, which feels almost suspicious.
+echo.
+echo !DEFEAT_TEXT!
+call :PAUSE
+goto :CHAPTER2
+
+
+rem -------------------- Chapter 2 Placeholder --------------------
+:CHAPTER2
+call :SCENE "TO BE CONTINUED..."
+echo The broadcast flickers back on and the SHOW-NARRATOR purrs: "REST UP. NEXT EPISODE GETS WEIRDER. WE HAVE NOTES FROM THE HAT." Somewhere, the audience is still arguing about your choices like they had any right. The camera fades out on your exhausted, victorious face.
+echo.
+echo Press any key to return to the beginning...
+pause >nul
+endlocal
+start "" "%~f0"
+exit
