@@ -1,12 +1,8 @@
 # Server Migration Guide
 
-**How to Perform Smooth Server Migrations and Minimize User Downtime**
+Servers can be dropped off on-site early, before the scheduled install day. This allows significant pre-work to be completed, minimizing on-site time. Some tasks are disruptive; others are not. This guide covers both types, with the assumption that disruptive work will occur on the scheduled day unless additional downtime is available.
 
 ---
-
-## Overview
-
-Servers can be dropped off on-site early, before the scheduled install day. This allows significant pre-work to be completed, minimizing on-site time. Some tasks are disruptive; others are not. This guide covers both types, with the assumption that disruptive work will occur on the scheduled day unless additional downtime is available.
 
 ## Quick Reference: Task Categories
 
@@ -28,36 +24,38 @@ Servers can be dropped off on-site early, before the scheduled install day. This
 
 ## Prerequisites
 
-If adding a Server 2019 DC to an older domain using FRS (File Replication Service), you must migrate to DFSR first. See Section 1.1 below.
+If adding a Server 2019 server to an older domain, you may need to migrate from FRS to DFSR. This is **non-disruptive** and can be done before your scheduled install day.
 
-## Section 1.1: FRS to DFSR Migration
+### Section 1.1: FRS to DFSR Migration
 
-### Summary
+**Reference:** [Migrating from File Replication Service (FRS) to Distributed File System Replication (DFS/DFSR)](https://itglue.com) - IT Glue Documents
+
+#### Summary
 
 FRS and DFSR replicate files within Active Directory between domain controllers. FRS is no longer supported—it was deprecated in Server 2008 R2 and does not function on Server 2019. Attempting to add a Server 2019 DC to an FRS-based domain will fail.
 
-### Prerequisites for FRS to DFSR Migration
+#### Prerequisites for FRS to DFSR Migration
 
 - Ensure you have a current backup before proceeding
 - If you have multiple domain controllers, allow AD replication to complete between each step before proceeding to the next step
 
-### Migration Steps
+#### Migration Steps
 
-#### Step 1: Migrate to "Prepared" State
+##### Step 1: Migrate to "Prepared" State
 ```
 dfsrmig /setglobalstate 1
 dfsrmig /getmigrationstate
 ```
 **Expected result:** All domain controllers show "Prepared" status
 
-#### Step 2: Migrate to "Redirected" State
+##### Step 2: Migrate to "Redirected" State
 ```
 dfsrmig /setglobalstate 2
 dfsrmig /getmigrationstate
 ```
 **Expected result:** All domain controllers show "Redirected" status
 
-#### Step 3: Migrate to "Eliminated" State
+##### Step 3: Migrate to "Eliminated" State
 ```
 dfsrmig /setglobalstate 3
 dfsrmig /getmigrationstate
@@ -66,91 +64,94 @@ dfsrmig /getmigrationstate
 
 ---
 
-## Section 1.2: Reset DSRM Password (if needed)
+### Section 1.2: Reset DSRM Password (if needed)
 
-If the DSRM password is unknown, reset it using the following procedure.
+Don't know the DSRM password and neither does the office? Reset it using this guide:
 
-### Procedure
-
-1. Open Run dialog (Start > Run), type `ntdsutil`, and press OK
-2. At the Ntdsutil command prompt, type: `set dsrm password`
-3. At the DSRM command prompt, choose one of the following:
-   - For local computer: `reset password on server null`
-   - For remote computer: `reset password on server servername`
-4. Enter the new password when prompted (no characters will display)
-5. At the DSRM command prompt, type `q`
-6. At the Ntdsutil command prompt, type `q` to exit
+**Reference:** [Reset the DSRM Administrator Password](https://docs.realitsolutions.com/kba/reset-the-dsrm-administrator-password-3b0d1ffb981a) - Real IT Solutions Knowledge Base
 
 ---
 
-## Section 1.3: AD DS Migration Process
+### Section 1.3: AD DS Migration Process
 
-Familiarize yourself with the AD DS migration process before proceeding. If possible, test in a lab environment first.
+**Reference:** [Active Directory Domain Services Migration](https://itglue.com) - IT Glue Documents
 
-### Non-Disruptive Tasks (Can be done before install day)
-- Add new server as secondary domain controller
-- Confirm functionality and fix replication if needed
-- Migrate FSMO roles
-- *Note: AD Integrated DNS zones replicate automatically*
+Familiarize yourself with the migration process before proceeding. If necessary, run through this process in a lab first so you understand it.
 
-### Disruptive Tasks (Schedule for install day)
-- Change new server IP address and re-register DNS
-- Demote old server
-- Update DHCP to point to correct DNS servers
+#### Key Point: Concurrent Domain Controllers
 
-### Important: Network Location Awareness (NLA)
+Active Directory fully supports multiple concurrent domain controllers and replication between them. Because of this, you can do a large amount of this work beforehand, in a non-disruptive manner.
 
-Configure NLA to depend on DNS to prevent the network type from being set to private instead of domain. See Section 1.4 below.
+#### Non-Disruptive Tasks (Can be done before install day)
+- Adding the new server as a secondary DC
+- Confirming functionality and fixing replication (if necessary)
+- Migrating the FSMO roles
+- *Note: This also replicates the Active Directory Integrated DNS Zones automatically*
+
+#### Disruptive Tasks (Schedule for install day)
+- Changing the server's IP address and re-registering DNS
+- Demoting the old server
+- Changing DHCP to point to the correct DNS servers
 
 ---
 
-## Section 1.4: Configure Network Location Awareness
+### Section 1.4: Configure Network Location Awareness (NLA)
 
-### Problem
+You will also want to follow this guide to ensure Network Location Awareness doesn't start too soon and cause the network type to be set to private instead of domain.
 
-When a server boots, the Network Location Awareness service may start before DNS. This causes the network type to be set to private instead of domain. Attempting to restart NLA will fail as it depends on the Network List service.
+**Reference:** [Network Location Awareness Configuration Guide](https://docs.realitsolutions.com) - Real IT Solutions
 
-### Solution
-
-Run the following command from an administrative command prompt, then reboot:
+**Quick Fix:** Run the following command from an administrative command prompt, then reboot:
 
 ```
 sc config nlasvc depend=DNS
 ```
 
-### Additional troubleshooting (if issues persist)
-
-Go to the Ethernet connection settings > TCP/IP V4 > Advanced and add the DNS suffix for the domain.
+If issues persist, go to the Ethernet connection settings > TCP/IP V4 > Advanced and add the DNS suffix for the domain.
 
 ---
 
 # Section 2: DHCP Migration
 
-DHCP migration is straightforward and can be done at any time with zero user impact. Using an export/import method preserves current leases, scopes, and all configurations. Devices will simply use the new DHCP server when renewing leases.
+DHCP is very easy to migrate and can be done at any time. Using an export/import method preserves current DHCP leases, scopes, and all configurations. Devices will simply use the new DHCP server when they need to renew leases, so long as a device isn't literally trying to get a lease right when the migration happens (a rare occurrence).
 
-## Process
-
-Export DHCP configuration from the old server and import it into the new server. Detailed instructions are available in the IT Glue knowledge base.
+**Reference:** [Migrating DHCP from Server 2012 to Server 2016](https://itglue.com) - IT Glue Documents
 
 ## Best Practice
 
-Test this process in a lab environment before deploying to production.
+Test this process in a lab environment before trying it in the field.
 
 ---
 
 # Section 3: File Migration
 
-File transfers can be started early with minimal user impact. While users continue modifying data on the old server, an initial copy significantly reduces the time required for the day-of incremental transfer.
+You can start the file transfer process from one server to another very easily and with little to no impact on users. While the initial copy shouldn't yet be used (as users are still modifying data on the old server), it should drastically cut down on the time required to run an incremental transfer on your install day.
 
 ## Why start early?
 
-Monitor the initial full copy to ensure it completes correctly. This ensures the day-of incremental transfer is quick. Arriving on site only to wait hours for data transfer defeats the purpose of early preparation.
+No matter what method you're using, simply monitor it to make sure your initial "full" copy finishes correctly, so your day-of incremental is quick. Last thing you want is to arrive on the day-of and have to wait hours for data transfer.
 
 ## File Transfer Methods
 
-- **Robocopy (Command Line)** - Detailed in IT Glue knowledge base
-- **SyncBackSE (GUI)** - Trial version available for testing
-- **Solarwinds MSP Backup** - Use Backup Recovery Console for Continuous Restore to create a live, up-to-date copy
+### Robocopy (Command Line)
+
+**Reference:** [Using Robocopy to copy files for a backup](https://itglue.com) - IT Glue Documents
+
+```
+robocopy "source" "destination" /MIR /B /COPYALL /R:1 /W:1
+```
+
+### SyncBack (GUI)
+
+**Reference:** [How to transfer data from one server to another using SyncBack or Robocopy - New Server Migration](https://itglue.com) - IT Glue Documents
+
+Download a trial version for testing before deploying in production.
+
+### Solarwinds MSP Backup (Continuous Restore)
+
+**Reference:** [How to use the Solarwinds Backup Recovery Console (Continuous Restore)](https://itglue.com) - IT Glue Documents
+
+Use the Backup Recovery Console to run a Continuous Restore, which will produce a "live" copy of the data, up to date as soon as a backup is run.
 
 ---
 
@@ -160,29 +161,34 @@ Monitor the initial full copy to ensure it completes correctly. This ensures the
 
 ## Process
 
-1. Ensure all data is migrated to the new server (see Section 3)
-2. Organize data in the correct path structure (e.g., `D:\FileShares\CompanyShared`)
-3. Create file shares on new server with correct SMB permissions
-4. Adjust NTFS file permissions as needed
-5. Remove shares from old server (do NOT delete data)
-6. Update Group Policy to reflect new mapped drive paths
-7. Users receive new mapped drive path at next logon—completely seamless
+Once you have files migrated to the new server, you can set up file shares and deploy new mapped drives. Your steps are:
 
-## User Impact
+1. Migrate all the data to the new server
+2. Move the data into a correct path (e.g., `D:\FileShares\CompanyShared`)
+3. Share the folder out with the correct SMB permissions
+4. Adjust NTFS file permissions, if necessary
+5. Remove the share from the old server (but do NOT delete the data)
+6. Update Group Policy to reflect the new path for the mapped drives
 
-Because mapped drive letters do not change, all user paths remain the same. Removing shares from the old server prevents accidental modifications and eliminates data loss risk.
+## User Experience
+
+The next time users log in, they will get the new mapped drive path, and this should be completely seamless to them. Since mapped drive letters do not change, all paths on the local computer remain the same. Since the old server is un-shared, users won't accidentally modify the old server, eliminating the chance of data loss.
 
 ---
 
 # Section 5: Folder Redirection Migration
 
-Folder Redirection stores user profile data (Documents, Desktop, etc.) on a server rather than locally. Migration requires careful planning and execution.
+**Reference:** [How to migrate Folder Redirection from one server to another](https://itglue.com) - IT Glue Documents
 
-## Phase 1: Pre-Migration (Several days before or day-of)
+**Setup Reference:** [How to set up Folder Redirection and disable Offline Files](https://itglue.com) - IT Glue Documents
+
+Familiarize yourself with Folder Redirection and the existing migration documentation before proceeding.
+
+## Phase 1: Pre-Migration (Before install day - Non-Disruptive)
 
 ### Step 1: Update Group Policy (Non-Disruptive)
 
-Update Folder Redirection policy to NOT move files to the new location. This allows workstations to update policy before the migration, preventing them from attempting to reach the old server.
+The main thing you're going to want to do is change the policy to **NOT move files to the new location**. You want to do this before the day-of so that computers can update to the new policy.
 
 1. Open Group Policy Management
 2. Find and edit the Folder Redirection GPO
@@ -192,53 +198,29 @@ Update Folder Redirection policy to NOT move files to the new location. This all
 6. Under Policy Removal, select: "Leave the folder in the new location when policy is removed"
 7. Allow all workstations to receive this policy update (typically at next logon)
 
-### Step 2: Migrate Data (Non-Disruptive for initial copy)
+### Step 2: Migrate Data (Non-Disruptive)
 
-Begin copying Folder Redirection data to the new server using Robocopy, SyncBackSE, Solarwinds Recovery Console, or Datto Direct Restore Utility. Preserve file permissions.
+You can also do a copy of the Folder Redirection data beforehand using any method from **Section 3: File Migration**:
+- Robocopy
+- SyncBack
+- Solarwinds MSP Backup (Continuous Restore)
 
-**Note:** If exclusive access is enabled ("Grant Exclusive Access to..."), use the RoboCopy command below:
-
-```
-robocopy "D:\FolderRedirectionPath" "\\NewServer\d$\NewFolderRedirectionPath" /MIR /B /COPYALL /SL /XJ /R:1 /W:1 /LOG:D:\FolderRedirection.log /TEE /ETA
-```
-
-Replace paths as appropriate for your environment.
+Preserve file permissions during the transfer.
 
 ### Step 3: Verify Folder Setup
 
-On the new server, create/verify the Folder Redirection share with proper permissions. See Section 5.1 below for detailed setup instructions.
+**Very Important:** When setting this back up, be very mindful of NTFS folder permissions! Review the setup document to see what the share and NTFS permissions should be.
 
-## Phase 2: Final Migration (Install day—Disruptive)
+See **Section 5.1: Folder Redirection Setup (Detailed)** below for complete configuration instructions.
 
-### Step 4: Update Group Policy with New Paths
+## Phase 2: Final Migration (Install day - Disruptive)
 
-Update all Folder Redirection policy paths to point to the new server.
+If you have disruptive downtime available beforehand, you can run through the rest of the folder redirection migration early. Once all computers know NOT to move files to the new location, you can:
 
-### Step 5: Apply Updates and Test
-
-1. Push Group Policy update to all workstations (`gpupdate`)
-2. Users will see new paths at next logon
-3. Test by logging in as a user and verifying file locations are on the new server
-4. Check Event Viewer if any folders failed to redirect
-
-### Troubleshooting: Legacy "My Documents" Folders
-
-If Folder Redirection data includes legacy "My Documents" folders (from older Windows), users will see missing data. Run the PowerShell script below beforehand:
-
-```powershell
-# Change this directory to wherever you are pointing Folder Redirection
-$dir = dir D:\FolderRedirection | ?{$_.PSISContainer}
-foreach ($d in $dir) {
-    $path = Join-Path $d.FullName -ChildPath "\My Documents"
-    $NewPath = Join-Path $d.FullName -ChildPath "\Documents"
-    Move-Item $path $NewPath
-    $path = Join-Path $d.FullName -ChildPath "\My Pictures"
-    $NewPath = Join-Path $d.FullName -ChildPath "\Pictures"
-    Move-Item $path $NewPath
-}
-```
-
-Customize as needed for your environment.
+1. Move the files to the new server
+2. Update the policies to point to the new location
+3. Push out a `gpupdate /force` to all computers
+4. Test thoroughly
 
 ---
 
