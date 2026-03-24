@@ -106,7 +106,7 @@ Often times when a server boots up, the Network Location Awareness service will 
 
 ### Solution
 
-Run the following command from an administrative command prompt, then reboot the server. This will make the NLA service dependent upon DNS:
+Run the following command from an administrative command prompt, then reboot the server. Doing this will make the NLA service dependent upon DNS.
 
 ```
 sc config nlasvc depend=DNS
@@ -160,6 +160,74 @@ Download and test before deploying in production.
 ### FreeFileSync (GUI)
 
 Open-source file synchronization tool that provides a simple interface for bi-directional syncing with support for preserving file permissions.
+
+---
+
+## Section 3.1: Guide to Using FreeFileSync for Data Migration
+
+### 1. Install FreeFileSync
+
+**Install FreeFileSync on the Old Server**
+- Download FreeFileSync from https://freefilesync.org/
+- Run the executable as administrator
+- Click next all the way through the installation wizard
+
+### 2. Create "General" File on New Server
+
+- Remote into the new server
+- On the D Drive, create a folder called "Older Server"
+- Share the file with read/write permissions for "Everyone"
+- Inside that folder, create 2 new folders:
+  - `C Drive`
+  - `D Drive`
+
+### 3. Create Specific File Shares (Optional)
+
+If you want to save time and are confident in the files you want to migrate, you can create specific file shares for 1-to-1 folder mapping.
+
+**Example:**
+- `shared`
+- `users`
+- `Eaglesoft DATA`
+
+Create these folders in the D Drive on the new server and share them with "Everyone" with read/write permissions.
+
+### 4. Configure FreeFileSync
+
+1. Open FreeFileSync
+2. On the left side, add the folders you want to sync
+   - Click the plus sign to add more than one
+3. On the right side, browse to the new server and select the file you want to copy data to
+4. Click the **Gear Icon**
+5. On the **Comparison tab**, select "Ignore errors"
+6. Go to the **Synchronization tab**
+7. Click **Mirror**
+8. Click OK
+9. Click the **Save as Batch Job** button
+10. Select **Run and minimized** and **auto close**
+11. Click **Save As**
+12. Click **Compare**
+    - This could take a while, just wait
+13. After it's finished comparing, **Synchronize** will turn green
+    - Click it
+14. Click OK
+
+### 5. Setup Batch Job to Auto Sync at Night
+
+**Create Task in Task Scheduler**
+
+1. Open the **Task Scheduler**
+2. Create a new **Basic Task**
+3. Follow the wizard through to completion
+4. Make the **Program/script** point to the location of FreeFileSync.exe
+   - Usually: `C:\Program Files\FreeFileSync\FreeFileSync.exe`
+5. In the **Add Arguments** section, add the link to the ffs_batch file you created earlier
+   - Example: `"D:\datamig.ffs_batch"`
+   - **Important: Use quotation marks to protect spaces in path names**
+
+**Configure Task Settings**
+
+After the task is created, open it and click on the **Settings page**, then set the following options as needed for your environment.
 
 ---
 
@@ -369,7 +437,7 @@ These steps establish the Folder Redirection infrastructure. Perform them outsid
 5. **DO NOT make these users Administrators or Domain Admins**
 6. Create a separate OU for Computers and move applicable workstations into it
 
-### ⚠️ Critical Warning
+### Critical Warning
 
 **BEFORE proceeding further, back up every user profile on every machine. This is essential.**
 
