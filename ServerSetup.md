@@ -26,9 +26,7 @@ Servers can be dropped off on-site early, before the scheduled install day. This
 
 If adding a Server 2019 server to an older domain, you may need to migrate from FRS to DFSR. This is **non-disruptive** and can be done before your scheduled install day.
 
-### Section 1.1: FRS to DFSR Migration
-
-**Reference:** [Migrating from File Replication Service (FRS) to Distributed File System Replication (DFS/DFSR)](https://itglue.com) - IT Glue Documents
+## Section 1.1: FRS to DFSR Migration
 
 #### Summary
 
@@ -64,17 +62,22 @@ dfsrmig /getmigrationstate
 
 ---
 
-### Section 1.2: Reset DSRM Password (if needed)
+## Section 1.2: Reset DSRM Password (if needed)
 
-Don't know the DSRM password and neither does the office? Reset it using this guide:
+Don't know the DSRM password and neither does the office? Reset it using the following procedure:
 
-**Reference:** [Reset the DSRM Administrator Password](https://docs.realitsolutions.com/kba/reset-the-dsrm-administrator-password-3b0d1ffb981a) - Real IT Solutions Knowledge Base
+1. Open Run dialog (Start > Run), type `ntdsutil`, and press OK
+2. At the Ntdsutil command prompt, type: `set dsrm password`
+3. At the DSRM command prompt, choose one of the following:
+   - For local computer: `reset password on server null`
+   - For remote computer: `reset password on server servername`
+4. Enter the new password when prompted (no characters will display)
+5. At the DSRM command prompt, type `q`
+6. At the Ntdsutil command prompt, type `q` to exit
 
 ---
 
-### Section 1.3: AD DS Migration Process
-
-**Reference:** [Active Directory Domain Services Migration](https://itglue.com) - IT Glue Documents
+## Section 1.3: AD DS Migration Process
 
 Familiarize yourself with the migration process before proceeding. If necessary, run through this process in a lab first so you understand it.
 
@@ -95,11 +98,9 @@ Active Directory fully supports multiple concurrent domain controllers and repli
 
 ---
 
-### Section 1.4: Configure Network Location Awareness (NLA)
+## Section 1.4: Configure Network Location Awareness (NLA)
 
-You will also want to follow this guide to ensure Network Location Awareness doesn't start too soon and cause the network type to be set to private instead of domain.
-
-**Reference:** [Network Location Awareness Configuration Guide](https://docs.realitsolutions.com) - Real IT Solutions
+You will also want to ensure Network Location Awareness doesn't start too soon and cause the network type to be set to private instead of domain.
 
 **Quick Fix:** Run the following command from an administrative command prompt, then reboot:
 
@@ -115,7 +116,9 @@ If issues persist, go to the Ethernet connection settings > TCP/IP V4 > Advanced
 
 DHCP is very easy to migrate and can be done at any time. Using an export/import method preserves current DHCP leases, scopes, and all configurations. Devices will simply use the new DHCP server when they need to renew leases, so long as a device isn't literally trying to get a lease right when the migration happens (a rare occurrence).
 
-**Reference:** [Migrating DHCP from Server 2012 to Server 2016](https://itglue.com) - IT Glue Documents
+## Process
+
+Export DHCP configuration from the old server and import it into the new server.
 
 ## Best Practice
 
@@ -135,21 +138,15 @@ No matter what method you're using, simply monitor it to make sure your initial 
 
 ### Robocopy (Command Line)
 
-**Reference:** [Using Robocopy to copy files for a backup](https://itglue.com) - IT Glue Documents
-
 ```
 robocopy "source" "destination" /MIR /B /COPYALL /R:1 /W:1
 ```
 
 ### SyncBack (GUI)
 
-**Reference:** [How to transfer data from one server to another using SyncBack or Robocopy - New Server Migration](https://itglue.com) - IT Glue Documents
-
 Download a trial version for testing before deploying in production.
 
 ### Solarwinds MSP Backup (Continuous Restore)
-
-**Reference:** [How to use the Solarwinds Backup Recovery Console (Continuous Restore)](https://itglue.com) - IT Glue Documents
 
 Use the Backup Recovery Console to run a Continuous Restore, which will produce a "live" copy of the data, up to date as soon as a backup is run.
 
@@ -178,10 +175,6 @@ The next time users log in, they will get the new mapped drive path, and this sh
 
 # Section 5: Folder Redirection Migration
 
-**Reference:** [How to migrate Folder Redirection from one server to another](https://itglue.com) - IT Glue Documents
-
-**Setup Reference:** [How to set up Folder Redirection and disable Offline Files](https://itglue.com) - IT Glue Documents
-
 Familiarize yourself with Folder Redirection and the existing migration documentation before proceeding.
 
 ## Phase 1: Pre-Migration (Before install day - Non-Disruptive)
@@ -209,7 +202,7 @@ Preserve file permissions during the transfer.
 
 ### Step 3: Verify Folder Setup
 
-**Very Important:** When setting this back up, be very mindful of NTFS folder permissions! Review the setup document to see what the share and NTFS permissions should be.
+**Very Important:** When setting this back up, be very mindful of NTFS folder permissions! Review the setup documentation to see what the share and NTFS permissions should be.
 
 See **Section 5.1: Folder Redirection Setup (Detailed)** below for complete configuration instructions.
 
@@ -341,7 +334,7 @@ Create GPO: `Disable Offline Files` at domain root
 
 1. Run `gpupdate /force` on all workstations
 2. Reboot all workstations to fully disable Offline Files
-3. Use ProfWiz to migrate user profiles (see IT Glue USMT guide)
+3. Use ProfWiz to migrate user profiles
 4. Windows will automatically move local data into the new `FolderRedirection$` share
 
 ## Step 7: Test
@@ -353,9 +346,9 @@ Create GPO: `Disable Offline Files` at domain root
 
 ## Step 8: Document Setup
 
-Create an IT Glue entry titled "Folder Redirection" and document:
-- Servers hosting the Folder Redirection share (tag them)
-- File shares and paths (create entries under File Sharing, tag them)
+Create documentation and record:
+- Servers hosting the Folder Redirection share
+- File shares and paths
 - Name of the Group Policy Object
 - OU filtering/targeting, or if policy applies to all users
 - Update Group Policy documentation
