@@ -100,15 +100,26 @@ Active Directory fully supports multiple concurrent domain controllers and repli
 
 ## Section 1.4: Configure Network Location Awareness (NLA)
 
-You will also want to ensure Network Location Awareness doesn't start too soon and cause the network type to be set to private instead of domain.
+### Problem
 
-**Quick Fix:** Run the following command from an administrative command prompt, then reboot:
+Often times when a server boots up, the Network Location Awareness service will start before DNS does. When this happens, it will set the network type to private instead of domain. Trying to restart the NLA service will fail as it relies upon a Network List service which won't restart.
+
+### Solution
+
+Run the following command from an administrative command prompt, then reboot the server. This will make the NLA service dependent upon DNS:
 
 ```
 sc config nlasvc depend=DNS
 ```
 
-If issues persist, go to the Ethernet connection settings > TCP/IP V4 > Advanced and add the DNS suffix for the domain.
+### Troubleshooting: If Issues Persist
+
+If you are still having issues after running the command above, you can also add the DNS Suffix for connections on the server:
+
+1. Go to your Ethernet connection settings
+2. Navigate to TCP/IP V4
+3. Click Advanced
+4. Add the DNS suffix for the domain
 
 ---
 
